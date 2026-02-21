@@ -30,16 +30,15 @@ app.get('/', (req, res) => {
     <body class="bg-[#0a0b14] text-white font-sans p-6">
         <header class="text-center mb-10 uppercase font-black">
             <h1 class="text-5xl text-blue-500 italic drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">\${CONFIG.NOME_LOJA}</h1>
-            <p class="text-gray-400 mt-2 tracking-widest underline decoration-blue-500">O Brabo dos Painéis</p>
+            <p class="text-gray-400 mt-2 tracking-widest">O BRABO DOS PAINÉIS</p>
         </header>
-
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             \${products.map(p => \`
                 <div class="bg-gray-900/40 border border-gray-800 rounded-3xl p-6 hover:border-blue-500 transition-all flex flex-col items-center">
-                    <img src="\${p.image}" class="h-32 mb-4 object-contain shadow-blue-500/20 shadow-xl" onerror="this.src='https://via.placeholder.com/150/000/FFF?text=IMG'">
+                    <img src="\${p.image}" class="h-32 mb-4 object-contain" onerror="this.src='https://via.placeholder.com/150/000/FFF?text=BROOK'">
                     <h3 class="text-lg font-bold uppercase">\${p.title}</h3>
-                    <p class="text-blue-500 font-black text-2xl my-2 italic font-mono">R$ \${p.price.toFixed(2)}</p>
-                    <button onclick="window.location.href='/checkout/\${p.id}'" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-2xl font-black uppercase text-sm mt-auto shadow-lg shadow-blue-600/30">Comprar Agora</button>
+                    <p class="text-blue-500 font-black text-2xl my-2 italic">R$ \${p.price.toFixed(2)}</p>
+                    <button onclick="window.location.href='/checkout/\${p.id}'" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-2xl font-black uppercase text-sm mt-auto">Comprar Agora</button>
                 </div>
             \`).join('')}
         </div>
@@ -51,10 +50,8 @@ app.get('/', (req, res) => {
 app.get('/checkout/:id', (req, res) => {
   const product = products.find(p => p.id === req.params.id);
   if (!product) return res.redirect('/');
-
   const pixPayload = \`00020101021126580014BR.GOV.BCB.PIX0114\${CONFIG.MINHA_CHAVE_PIX}5204000053039865404\${product.price.toFixed(2)}5802BR5911BROOKSTORE6009SAOPAULO62070503***6304\`;
   const qrCodeUrl = \`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=\${encodeURIComponent(pixPayload)}\`;
-
   res.send(\`
     <!DOCTYPE html>
     <html lang="pt-br">
@@ -65,24 +62,21 @@ app.get('/checkout/:id', (req, res) => {
     </head>
     <body class="bg-[#0a0b14] text-white flex items-center justify-center min-h-screen p-4">
         <div class="bg-[#121421] border border-gray-800 w-full max-w-md rounded-[40px] p-8 text-center shadow-2xl">
-            <h2 class="text-2xl font-black mb-6 italic text-blue-500 uppercase font-serif">PAGAMENTO PIX</h2>
-            <div class="bg-white p-4 rounded-3xl inline-block mb-6 shadow-[0_0_30px_rgba(255,255,255,0.15)]"><img src="\${qrCodeUrl}"></div>
+            <h2 class="text-2xl font-black mb-6 text-blue-500 uppercase italic">PAGAMENTO PIX</h2>
+            <div class="bg-white p-4 rounded-3xl inline-block mb-6 shadow-xl"><img src="\${qrCodeUrl}"></div>
             <div class="bg-black/50 p-4 rounded-2xl border border-gray-800 mb-6 text-center">
                 <p class="text-gray-400 text-[10px] uppercase font-bold tracking-widest">Valor do \${product.title}</p>
-                <p class="text-3xl font-black text-blue-500 font-mono">R$ \${product.price.toFixed(2)}</p>
+                <p class="text-3xl font-black text-blue-500">R$ \${product.price.toFixed(2)}</p>
             </div>
             <div class="space-y-3">
-                <button onclick="window.open('https://wa.me/\${CONFIG.MEU_WHATSAPP}?text=Fiz+o+pagamento+de+R$+\${product.price.toFixed(2)}+pelo+\${product.title}', '_blank')" class="w-full bg-[#25D366] py-4 rounded-2xl font-black uppercase shadow-lg shadow-green-600/20 transition hover:scale-105">WhatsApp</button>
-                <button onclick="window.open('\${CONFIG.DISCORD_OFICIAL}', '_blank')" class="w-full bg-[#5865F2] py-4 rounded-2xl font-black uppercase shadow-lg shadow-blue-600/20 transition hover:scale-105">Entrar no Discord</button>
+                <button onclick="window.open('https://wa.me/\${CONFIG.MEU_WHATSAPP}?text=Paguei+R$+\${product.price.toFixed(2)}+pelo+\${product.title}', '_blank')" class="w-full bg-[#25D366] py-4 rounded-2xl font-black uppercase shadow-lg shadow-green-600/20">Confirmar no WhatsApp</button>
             </div>
-            <a href="/" class="block mt-6 text-gray-500 text-sm hover:underline italic">Voltar</a>
+            <a href="/" class="block mt-6 text-gray-500 text-sm hover:underline italic uppercase font-bold tracking-widest">Voltar</a>
         </div>
     </body>
     </html>
   \`);
-});const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
 });
 
+// A LINHA QUE RESOLVE O ERRO 500:
 module.exports = app;
