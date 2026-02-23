@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>BROOK STORE | VERIFICAR</title>
+    <style>
+        body { background: #0a0514; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: screen; }
+        .box { background: #130a24; border: 1px solid #7c3aed; padding: 40px; border-radius: 24px; text-align: center; max-width: 400px; width: 100%; }
+        input { background: #000; border: 1px solid #333; color: #0f0; padding: 15px; width: 100%; border-radius: 8px; text-align: center; font-family: monospace; font-size: 20px; outline: none; margin-bottom: 20px; }
+        button { background: #7c3aed; color: white; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+    </style>
+</head>
+<body class="bg-[#0a0514]">
+    <div class="box">
+        <h1 class="text-purple-500 font-black italic mb-4 uppercase">Verificação Brook</h1>
+        <p class="text-gray-400 text-sm mb-6">Insira o código enviado ao seu Gmail para liberar o acesso.</p>
+        
+        <input id="input-cod" type="text" placeholder="BROOK0000">
+        
+        <button onclick="checar()">Verificar Código</button>
+        
+        <p id="msg" class="mt-4 text-xs font-bold"></p>
+    </div>
+
+    <script>
+        function checar() {
+            const cod = document.getElementById('input-cod').value.trim().toUpperCase();
+            
+            // Aceita qualquer código que comece com BROOK e tenha 9 letras no total
+            if (cod.startsWith("BROOK") && cod.length === 9) {
+                Swal.fire({
+                    title: 'ACESSO LIBERADO!',
+                    text: 'Código verificado com sucesso.',
+                    icon: 'success',
+                    background: '#130a24', color: '#fff'
+                });
+            } else {
+                Swal.fire({
+                    title: 'ERRO!',
+                    text: 'Código inválido ou expirado.',
+                    icon: 'error',
+                    background: '#130a24', color: '#fff'
+                });
+            }
+        }
+    </script>
+</body>
+</html>
