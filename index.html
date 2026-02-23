@@ -1,118 +1,144 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script><script src="https://unpkg.com/lucide@latest"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>emailjs.init("GELM_vuWtLrQXSsMn");</script>
     <title>BROOK STORE | OFICIAL</title>
     <style>
-        body { background: #0a0514; color: white; font-family: sans-serif; overflow-x: hidden; }
-        .purple-glass { background: rgba(25, 10, 50, 0.8); border: 1px solid #7c3aed; backdrop-filter: blur(10px); }
-        .img-prod { width: 100%; height: 180px; object-fit: cover; border-radius: 20px; border: 2px solid #7c3aed33; }
-        .promo-bar { background: linear-gradient(90deg, #7c3aed, #4c1d95); animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 0.9; } 50% { opacity: 1; } }
-        #login-screen { background: radial-gradient(circle at center, #1e103d 0%, #0a0514 100%); }
+        body { background: #0a0514; color: white; font-family: sans-serif; }
+        .card-prod { background: #130a24; border: 1px solid #2d1b4d; border-radius: 20px; padding: 15px; transition: 0.3s; }
+        .img-fix { width: 100%; height: 160px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; border: 1px solid #333; }
+        .shopify-btn { background: #7c3aed; color: white; font-weight: 800; border-radius: 8px; cursor: pointer; border: none; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen" class="fixed inset-0 z-[300] flex items-center justify-center p-6">
-        <div class="purple-glass p-8 rounded-[40px] max-w-sm w-full text-center border-2 border-purple-500 shadow-[0_0_50px_rgba(124,58,237,0.3)]">
-            <div class="mb-6 inline-block p-4 bg-purple-600/20 rounded-full"><i data-lucide="shield-check" class="w-10 h-10 text-purple-400"></i></div>
-            <h2 class="text-2xl font-black italic uppercase mb-2">Acesso Restrito</h2>
-            <p class="text-gray-400 text-xs mb-8">Digite seu usuário para entrar na Brook Store</p>
-            <input type="text" id="user-input" placeholder="NOME DE USUÁRIO" class="w-full bg-black/40 border border-purple-900 p-4 rounded-2xl mb-4 outline-none focus:border-purple-500 text-center font-bold uppercase text-xs">
-            <button onclick="login()" class="w-full bg-purple-600 py-4 rounded-2xl font-black uppercase shadow-lg">Entrar na Loja</button>
+    <header class="p-6 border-b border-purple-900/30 flex justify-between items-center max-w-6xl mx-auto">
+        <h1 onclick="location.reload()" class="text-xl font-black italic text-purple-500 cursor-pointer uppercase">BROOK STORE</h1>
+        <div class="relative p-2 bg-purple-900/20 border border-purple-500/40 rounded-lg">
+            <i data-lucide="shopping-bag"></i>
+        </div>
+    </header>
+
+    <main id="home-page" class="max-w-6xl mx-auto px-6 py-10">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6" id="products-grid"></div>
+        
+        <div class="mt-20 border-t border-purple-900/30 pt-10">
+            <h2 class="text-center text-2xl font-black mb-10 italic uppercase text-purple-400">Avaliações</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-[#130a24] p-6 rounded-2xl border border-purple-900/50">
+                    <p class="italic text-gray-300">"Melhor xit que já usei, suporte do Davi é 10!"</p>
+                    <p class="mt-4 font-bold text-purple-500">- @player_ff</p>
+                </div>
+                <div class="bg-[#130a24] p-6 rounded-2xl border border-purple-900/50">
+                    <p class="italic text-gray-300">"O painel da barbie é apelão demais."</p>
+                    <p class="mt-4 font-bold text-purple-500">- @vini_pro</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="register-page" class="hidden max-w-md mx-auto px-4 py-20 text-center">
+        <div class="bg-[#130a24] p-8 rounded-3xl border border-purple-500">
+            <h2 class="text-xl font-black mb-6 uppercase text-purple-400">Criar Conta</h2>
+            <input id="reg-email" type="email" placeholder="Seu Gmail" class="w-full p-4 rounded-xl mb-4 bg-black border border-purple-900 text-white outline-none">
+            <button onclick="irParaPagamento()" class="w-full shopify-btn py-4 uppercase italic">Continuar</button>
         </div>
     </div>
 
-    <div id="main-content" class="opacity-0 transition-opacity duration-1000">
-        <div class="promo-bar py-2 text-center text-[10px] font-black uppercase sticky top-0 z-[60]">🔥 PROMOÇÃO ATIVADA PARA: <span id="logged-user"></span></div>
-
-        <header class="p-6 flex justify-between max-w-7xl mx-auto items-center border-b border-purple-900 sticky top-[36px] bg-[#0a0514]/90 z-50">
-            <h1 class="text-2xl font-black italic text-purple-500 uppercase">BROOK STORE</h1>
-            <button onclick="toggleCart()" class="relative p-3 bg-purple-900/30 border border-purple-500/50 rounded-2xl">
-                <i data-lucide="shopping-cart"></i>
-                <span id="cart-count" class="absolute -top-1 -right-1 bg-purple-500 text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">0</span>
-            </button>
-        </header>
-
-        <main class="max-w-7xl mx-auto px-6 py-12">
-            <div id="products-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20"></div>
-        </main>
-
-        <div id="cart-sidebar" class="fixed right-0 top-0 h-full w-full md:w-96 purple-glass z-[100] translate-x-full transition-transform p-6 flex flex-col">
-            <div class="flex justify-between items-center mb-8 border-b border-purple-800 pb-4">
-                <h3 class="font-black text-purple-400 uppercase">Seu Pedido</h3>
-                <button onclick="toggleCart()"><i data-lucide="x"></i></button>
+    <div id="checkout-page" class="hidden max-w-md mx-auto px-4 py-10 text-center">
+        <div class="bg-[#130a24] p-8 rounded-3xl border border-purple-500">
+            <h2 class="text-lg font-bold mb-4 italic">PAGAMENTO PIX</h2>
+            <div id="qr-area" class="bg-white p-4 rounded-xl mb-6 inline-block"></div>
+            
+            <div class="mb-6">
+                <p class="text-[10px] text-gray-400 mb-2 uppercase italic">Chave Pix (Celular):</p>
+                <div class="flex items-center bg-black/50 p-3 rounded-lg border border-purple-900">
+                    <input id="pix-key" type="text" value="24999582173" readonly class="bg-transparent w-full text-center font-bold text-purple-400 outline-none">
+                    <button onclick="copyPix()" class="ml-2 text-purple-500"><i data-lucide="copy"></i></button>
+                </div>
             </div>
-            <div id="cart-items" class="flex-1 space-y-4 overflow-y-auto"></div>
-            <div class="border-t border-purple-800 pt-6">
-                <div class="flex justify-between font-black text-xl mb-6"><span>TOTAL:</span><span id="cart-total" class="text-purple-400">R$ 0,00</span></div>
-                <button onclick="checkout()" class="w-full bg-purple-600 py-4 rounded-xl font-black uppercase shadow-lg">Pagar via Pix</button>
-            </div>
-        </div>
 
-        <div id="pix-modal" class="hidden fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-4">
-            <div class="bg-[#130a24] border border-purple-500 p-8 rounded-[40px] max-w-sm w-full text-center">
-                <h3 class="text-purple-400 font-black mb-4">PAGAMENTO PIX</h3>
-                <div id="qr-code" class="bg-white p-2 rounded-2xl inline-block mb-4"></div>
-                <input type="text" readonly value="24999582173" class="w-full bg-black/40 p-3 rounded-xl border border-purple-900/50 text-center text-[10px] mb-4">
-                <button onclick="window.open('https://wa.me/5524999582173','_blank')" class="w-full bg-[#25D366] py-4 rounded-xl font-black text-xs uppercase mb-2">Confirmar no Whats</button>
-                <button onclick="document.getElementById('pix-modal').classList.add('hidden')" class="text-gray-500 text-[10px] font-bold">Voltar</button>
-            </div>
+            <button id="btn-finalizar" onclick="enviarPedido()" class="w-full bg-blue-600 py-4 rounded-xl font-bold uppercase">JÁ PAGUEI!</button>
         </div>
     </div>
 
     <script>
-        lucide.createIcons();
-        let cart = [];
+        let emailCliente = "";
+        let produtoSelecionado = "";
+        const minhaChavePix = "24999582173";
+
         const prods = [
-            {id: 1, n: 'Painel da Barbie', v: 5.00, i: 'https://images.weserv.nl/?url=raw.githubusercontent.com/lovable-uploads/main/image_ce1535.png'},
-            {id: 2, n: 'Atalho Full V4', v: 2.99, i: 'https://images.weserv.nl/?url=raw.githubusercontent.com/lovable-uploads/main/image_cdbefb.jpg'},
-            {id: 3, n: 'Holograma V2', v: 1.00, i: 'https://images.weserv.nl/?url=raw.githubusercontent.com/lovable-uploads/main/image_cdbb94.jpg'},
-            {id: 4, n: 'Painel Dark Aura', v: 6.99, i: 'https://images.weserv.nl/?url=raw.githubusercontent.com/lovable-uploads/main/image_cdb7f8.png'},
-            {id: 5, n: 'Painel Freestyle', v: 2.99, i: 'https://images.weserv.nl/?url=raw.githubusercontent.com/lovable-uploads/main/image_cdbb00.png'}
+            {n: 'Painel da Barbie', v: 5.00, i: 'painel barbie.png'},
+            {n: 'Holograma V2', v: 1.00, i: 'holograma v2.jpg'},
+            {n: 'Painel Dark Aura', v: 6.99, i: 'painel dark aura.jpg'},
+            {n: 'Atalho Full V4', v: 2.99, i: 'Atalho full v4 ISO.jpg'},
+            {n: 'Auxílio iOS/Android', v: 4.99, i: 'Auxilio Sleep.jpg'},
+            {n: 'Painel FFH4X', v: 3.50, i: 'painel Uriel Xiter.jpg'},
+            {n: 'Holograma HS Pescoço', v: 9.99, i: 'hpçpgrama hs pescoço.jpg'}
         ];
 
-        function login() {
-            const user = document.getElementById('user-input').value;
-            if(user.length < 3) return alert("Digite um nome válido!");
-            document.getElementById('logged-user').innerText = user;
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-content').classList.remove('opacity-0');
+        function renderProducts() {
+            document.getElementById('products-grid').innerHTML = prods.map(p => `
+                <div class="card-prod flex flex-col">
+                    <img src="${p.i}" class="img-fix" onerror="this.src='https://placehold.co/400x300/130a24/7c3aed?text=BROOK'">
+                    <h3 class="text-[10px] font-black uppercase mb-1 italic truncate">${p.n}</h3>
+                    <p class="text-purple-400 font-black mb-4">R$ ${p.v.toFixed(2)}</p>
+                    <button onclick="escolherProduto('${p.n}')" class="w-full shopify-btn py-3 text-[10px] uppercase italic">Comprar</button>
+                </div>`).join('');
         }
 
-        const grid = document.getElementById('products-grid');
-        grid.innerHTML = prods.map(p => `
-            <div class="purple-glass p-5 rounded-[35px] flex flex-col items-center border border-purple-500/20 hover:border-purple-500 transition">
-                <img src="${p.i}" class="img-prod mb-4 shadow-lg">
-                <h3 class="font-black italic uppercase text-sm">${p.n}</h3>
-                <span class="text-2xl font-black text-purple-400 my-3">R$ ${p.v.toFixed(2)}</span>
-                <button onclick="addToCart(${p.id})" class="w-full bg-purple-600/20 border border-purple-500 py-3 rounded-xl font-black uppercase hover:bg-purple-600 transition">Comprar</button>
-            </div>`).join('');
-
-        function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('translate-x-full'); }
-        
-        function addToCart(id) {
-            cart.push(prods.find(x => x.id === id));
-            updateCart();
-            // ABRIR O CARRINHO AUTOMATICAMENTE AO CLICAR (COMO VOCÊ PEDIU)
-            document.getElementById('cart-sidebar').classList.remove('translate-x-full');
+        function escolherProduto(nome) {
+            produtoSelecionado = nome;
+            document.getElementById('home-page').classList.add('hidden');
+            document.getElementById('register-page').classList.remove('hidden');
         }
 
-        function updateCart() {
-            document.getElementById('cart-count').innerText = cart.length;
-            document.getElementById('cart-total').innerText = `R$ ${cart.reduce((a,b)=>a+b.v,0).toFixed(2)}`;
-            document.getElementById('cart-items').innerHTML = cart.map(item => `
-                <div class="bg-purple-900/20 p-3 rounded-2xl border border-purple-800/50 text-[10px] font-black uppercase">${item.n}</div>`).join('');
+        function irParaPagamento() {
+            emailCliente = document.getElementById('reg-email').value;
+            if(!emailCliente.includes('@')) return Swal.fire('Erro', 'Gmail inválido!', 'error');
+            document.getElementById('register-page').classList.add('hidden');
+            document.getElementById('checkout-page').classList.remove('hidden');
+            document.getElementById('qr-area').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${minhaChavePix}">`;
         }
 
-        function checkout() {
-            const total = cart.reduce((a,b)=>a+b.v,0);
-            const pay = `00020101021126580014BR.GOV.BCB.PIX0114249995821735204000053039865404${total.toFixed(2)}5802BR5911BROOKSTORE6009SAOPAULO62070503***6304`;
-            document.getElementById('qr-code').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pay)}" class="rounded-xl">`;
-            document.getElementById('pix-modal').classList.remove('hidden');
+        function copyPix() {
+            const pixInput = document.getElementById('pix-key');
+            pixInput.select();
+            document.execCommand('copy');
+            Swal.fire({ title: 'COPIADO!', text: 'Chave Pix copiada.', icon: 'success', timer: 1000, showConfirmButton: false });
         }
+
+        function enviarPedido() {
+            let codigoGerado = "BROOK" + Math.floor(Math.random() * 8999 + 1000);
+            document.getElementById('btn-finalizar').innerText = "ENVIANDO...";
+
+            // SINCRONIZADO COM O TEMPLATE ID: template_pi9wl0p
+            emailjs.send("service_uu69awn", "template_pi9wl0p", {
+                v1: emailCliente,    // Gmail que o cliente digitou
+                v2: produtoSelecionado, // Nome do produto que ele escolheu
+                v3: codigoGerado     // Código BROOKXXXX que vai pro verifica.html
+            }).then(() => {
+                Swal.fire({
+                    title: 'SUCESSO!',
+                    html: `Seu código foi enviado ao Gmail!<br><br><b>Acesse brook-store.vercel.app/verificar.html para ativar seu produto!</b>`,
+                    icon: 'success',
+                    background: '#130a24', color: '#fff'
+                });
+                document.getElementById('btn-finalizar').innerText = "JÁ PAGUEI!";
+            }).catch((err) => {
+                alert("Erro no envio do Template!");
+                document.getElementById('btn-finalizar').innerText = "JÁ PAGUEI!";
+            });
+        }
+
+        window.onload = () => { renderProducts(); lucide.createIcons(); };
     </script>
 </body>
 </html>
